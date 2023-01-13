@@ -3,12 +3,8 @@ import telepot
 from datetime import datetime
 import time
 import os
-import traceback
-import requests
-import json
 
 # my modules
-import robot_basics as rb
 import RMBConf as Conf
 import tgSend as tgs
 
@@ -51,71 +47,45 @@ def logWrite(level, event):
 logWrite(0, "System booted.")
 
 
-# check Internet connection by obtaining public IP
-connected = False
-while connected == False:
-    try:
-        req = requests.get("http://httpbin.org/ip")
-        connected = True
-        logWrite(0, "Connected to the Internet.")
-    except Exception as Err:
-        logWrite(3, "No Internet Connection." + str(traceback.format_exc()))
-        time.sleep(30)
-
-# keep on trying
-while req.status_code != 200:
-    time.sleep(30)
-    req = requests.get("http://httpbin.org/ip")
-    logWrite(2, "http status code: " + str(req.status_code))
-
-# if request is "http 200" value is correct
-if req.status_code == 200:
-    # change the HTTP response body into a JSON type
-    text = json.loads(req.text)
-    # retreive value by key using dict
-    ip = text['origin']
-    logWrite(0, "IP pubblico: " + ip)
-
 # create bot and insert token
-tg_link = False
-while tg_link == False:
-    try:
-        bot = telepot.Bot(token)
-        user = bot.getMe()
-        event = "Connection to Telegram successful! Bot user_id: " + str(user['id'])
-        logWrite(0, event)
-        tg_link = True
-    except Exception as Err:
-        logWrite(3, "Connection to Telegram failed.")
-        logWrite(3, traceback.format_exc())
+bot = telepot.Bot(token)
+user = bot.getMe()
+event = "Connection to Telegram successful!"
+logWrite(0, event)
+tg_link = True
+
+
+# sender's name and ID
+# authorized user
+adm_usr = int(admin)
+message = ">>> RMBOT AVVIATO <<<"
+bot.sendMessage(adm_usr, message)
+event = "System booted."
+logWrite(1, event)
+
 
 # activate default/custom keyboard
 hide_kbd = {'hide_kbd': True}
-show_kbd = {'keyboard': [['Motion ON', 'Snapshot', 'Motion OFF'],
-                         ['Audio', 'DELETE ALL', 'Video'],
-                         ['/\\'],
-                         ['<<', '( | )', '>>'],
-                         ['\\/'],
-                         ['LOW', 'MEDIUM', 'HIGH']]
+show_kbd = {'keyboard': [['Motion ON', 'Motion OFF'],
+                         ['Audio', 'Snapshot', 'Video'],
+                         ['Delete All', 'REBOOT'],
+                         ['POWEROFF']]
             }
 
 
 # on message receive
 def handle(msg):
-    # assign message content and sender ID to function "glance()" (from telepot module)
-    content_type, chat_type, chat_id = telepot.glance(msg)
-    # sender's name and ID
     usr_name = msg['from']['first_name']
     usr_id = msg["from"]["id"]
-    # authorized user
-    adm_usr = int(admin)
+    # assign message content and sender ID to function "glance()"
+    content_type, chat_type, chat_id = telepot.glance(msg)
     # verify content type (text required)
     if content_type == 'text':
         command = msg['text']
         # verify if the sender is an authorized user
         if usr_id != int(admin):
             # if not, log the event and send an alert to the admin
-            message = 'Spiacente ' + usr_name + ', accesso non autorizzato. I tuoi dati saranno inviati ai miei amministratori.'
+            message = 'Spiacente ' + usr_name + ', accesso non autorizzato.'
             bot.sendMessage(chat_id, message)
             message = "Attenzione! L'utente " + usr_name + " (id " + str(usr_id) + ") ha scritto: <<" + command + ">>"
             bot.sendMessage(adm_usr, message)
@@ -140,14 +110,16 @@ def handle(msg):
                 event = "Motion detection deactivated."
                 print(event)
                 logWrite(0, event)
-            elif command == "/delete" or command == "DELETE ALL":
+            elif command == "/delete" or command == "Delete All":
                 tgs.MediaDel()
                 message = 'File multimediali eliminati.'
                 bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
                 event = "Media deleted."
                 print(event)
                 logWrite(0, event)
-                os.system('sudo pkill motion')
+                os.system('rm motion/media/Audio/*')
+                os.system('rm motion/media/Video/*')
+                os.system('rm motion/media/Pictures/*')
             elif command == "/videorec" or command == "Video":
                 tgs.VideoRec()
                 message = 'Registrazione video.'
@@ -165,72 +137,43 @@ def handle(msg):
                 logWrite(0, event)
                 tgs.AudioSend()
             elif command == "/snapnow" or command == "Snapshot":
+                os.system('sudo pkill motion')
+                message = 'Disattivo il Guardian Mode...'
+                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
+                event = "Motion detection deactivated."
+                print(event)
+                message = 'Invio snapshot...'
+                logWrite(0, event)
+                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
                 tgs.Snapshot()
-
-                # Robot movement controls
-            elif command == "/forwards" or command == "/\\":
-                rb.Forwards()
-                message = 'Avanzo.'
+                message = 'Ho riattivato il Guardian Mode.'
                 bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Moving robot forwards."
+                event = "Motion detection activated."
                 print(event)
                 logWrite(0, event)
-            elif command == "/left" or command == "<<":
-                rb.CntrClockwise()
-                message = 'Sinistra.'
+                os.system('motion -b')
+            elif command == "/reboot" or command == "REBOOT":
+                message = 'Riavvio sistema.'
                 bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Turning robot counterclockwise."
+                event = "Rebooting..."
                 print(event)
                 logWrite(0, event)
-            elif command == "/stop" or command == "( | )":
-                rb.StopMotors()
-                message = 'Mi fermo.'
+                os.system('sudo reboot')
+            elif command == "/poweroff" or command == "POWEROFF":
+                message = 'Spegnimento sistema.'
                 bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Motors stopped."
+                event = "Shutting down system."
                 print(event)
                 logWrite(0, event)
-            elif command == "/right" or command == ">>":
-                rb.Clockwise()
-                message = 'Destra.'
-                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Turning robot clockwise."
-                print(event)
-                logWrite(0, event)
-            elif command == "/down" or command == "\\/":
-                rb.Backwards()
-                message = 'Retrocedo.'
-                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Moving robot backwards."
-                print(event)
-                logWrite(0, event)
-            elif command == "/low" or command == "LOW":
-                rb.Low()
-                message = 'Velocità ridotta.'
-                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Low speed selected."
-                print(event)
-                logWrite(0, event)
-            elif command == "/medium" or command == "MEDIUM":
-                rb.Medium()
-                message = 'Velocità media.'
-                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "Medium speed selected."
-                print(event)
-                logWrite(0, event)
-            elif command == "/high" or command == "HIGH":
-                rb.High()
-                message = 'Velocità massima.'
-                bot.sendMessage(chat_id, message, reply_markup=hide_kbd)
-                event = "High speed selected."
-                print(event)
-                logWrite(0, event)
+                os.system('sudo poweroff')
     else:
         # if message is not text, notify it to the sender.
         message = 'Mi spiace, non capisco. Scrivimi del testo.'
         bot.sendMessage(chat_id, message)
 
+
 bot.message_loop(handle)
 
-print ('Listening...\n')
+print('Listening...\n')
 while 1:
     time.sleep(1)
