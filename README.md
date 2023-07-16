@@ -1,5 +1,7 @@
 # ScrappyBot
 
+![Alt text](images/scrappy.png)
+
 <div align="left">
 Ecco dei piccoli script in Python per il controllo del mio robot, forgiato con un Raspberry Pi 4B, dei cingoli giocattolo e... pezzi di fortuna.
 
@@ -10,6 +12,8 @@ Cito quindi il sito del suo progetto: [www.ladomoticafaidame.it](http://www.lado
 ## 1 - robot_basics.py
 
 Controlla i pin GPIO che ho collegato al L298N (un dual controller per motori, anche detto H-bridge).
+
+![Alt text](images/img1.png)
 
 ## 2 - RMBot.py
 
@@ -24,6 +28,8 @@ Invia all'amministratore del sistema le istantanee e i video acquisiti da Motion
 Dopo l'invio, cancella tutti i file multimediali.
 
 Motion deve essere correttamente configurato affinché funzioni (target e filename, soglie di attivazione, abilitazione istantanee e video preview).
+
+![Alt text](images/rmbot.jpg)
 
 ## 4 - kbd_control.py
 
@@ -50,6 +56,8 @@ Il **tasto 'i'** permette di inserire caratteri che poi il robot pronuncerà (oc
 
 **Tasto 'v'** = registra un file video di 5: secondi e lo invia alla chat Telegram specificata.
 
+![Alt text](images/ui.jpg)
+
 #### VELOCITA' MOTORI:
 
 **h** = velocità massima (high)
@@ -59,6 +67,8 @@ Il **tasto 'i'** permette di inserire caratteri che poi il robot pronuncerà (oc
 **l** = velocità ridotta (low)
 
 Il **tasto 'q'** interrompe l'esecuzione dello script.
+
+![Alt text](images/img2.png)
 
 #### 4 - tgSend.py
 
@@ -71,4 +81,6 @@ Avvia l'anteprima della PICam e la rende disponibile all'IP locale del Raspberry
 #### 6 - VRStream.Py
 
 Come "streamCam.py", ma l'anteprima viene visualizzata in due immagini adiacenti. In questo modo, se inseriamo lo smartphone in un visore per la realtà virtuale/aumentata, potremo controllare il robot in FPV.
-188beeaa2cd03e7b/11.png)
+
+![Alt text](images/parts.png)
+![Alt text](images/3.png)
