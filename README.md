@@ -1,6 +1,6 @@
 # ScrappyBot
 
-![Alt text](images/scrappy.png)
+![Alt text](images/scrappy.jpg)
 
 <div align="left">
 Ecco dei piccoli script in Python per il controllo del mio robot, forgiato con un Raspberry Pi 4B, dei cingoli giocattolo e... pezzi di fortuna.
@@ -56,8 +56,6 @@ Il **tasto 'i'** permette di inserire caratteri che poi il robot pronuncerà (oc
 
 **Tasto 'v'** = registra un file video di 5: secondi e lo invia alla chat Telegram specificata.
 
-![Alt text](images/ui.jpg)
-
 #### VELOCITA' MOTORI:
 
 **h** = velocità massima (high)
@@ -68,7 +66,7 @@ Il **tasto 'i'** permette di inserire caratteri che poi il robot pronuncerà (oc
 
 Il **tasto 'q'** interrompe l'esecuzione dello script.
 
-![Alt text](images/img2.png)
+[![Watch the video](images/ui.jpg)](images/test.mp4/)
 
 #### 4 - tgSend.py
 
@@ -78,9 +76,11 @@ Contiene le funzioni necessarie all'esecuzione degli script precedentemente desc
 
 Avvia l'anteprima della PICam e la rende disponibile all'IP locale del Raspberry (porta 8080) nel browser di qualsiasi periferica connessa alla rete locale.
 
+![Alt text](images/img2.png)
+
 #### 6 - VRStream.Py
 
 Come "streamCam.py", ma l'anteprima viene visualizzata in due immagini adiacenti. In questo modo, se inseriamo lo smartphone in un visore per la realtà virtuale/aumentata, potremo controllare il robot in FPV.
 
 ![Alt text](images/parts.png)
-![Alt text](images/3.png)
+![Alt text](images/img3.png)
