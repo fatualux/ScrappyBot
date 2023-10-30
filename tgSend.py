@@ -100,7 +100,7 @@ def MediaMove():
 def MediaDel():
     rm_vid = 'rm ' + vid_path + '*'
     rm_pic = 'rm ' + pic_path + '*'
-    rm_aud = 'rm ' +aud_path + '*'
+    rm_aud = 'rm ' + aud_path + '*'
     os.system(rm_vid)
     os.system(rm_pic)
     os.system(rm_aud)
