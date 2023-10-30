@@ -104,7 +104,3 @@ def MediaDel():
     os.system(rm_vid)
     os.system(rm_pic)
     os.system(rm_aud)
-
-
-
-
