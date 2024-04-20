@@ -3,14 +3,12 @@ import telepot
 from datetime import datetime
 import time
 import os
-
-# my modules
-import RMBConf as Conf
+import config as cfg
 import tgSend as tgs
 
 # IDs #
-admin = Conf.admin
-token = Conf.token
+admin = cfg.admin
+token = cfg.token
 
 
 # Return current date and time.
